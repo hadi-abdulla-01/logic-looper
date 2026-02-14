@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Lightbulb, RefreshCw, CheckCircle2, Award, Clock, Trophy } from 'lucide-react';
+import { Lightbulb, RefreshCw, CheckCircle2, Award, Clock, Trophy, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { getContextualPuzzleHint, updateUserStats, savePuzzleCompletion } from "@/lib/actions";
 import { usePuzzleTimer } from "@/hooks/use-puzzle-timer";
@@ -243,9 +243,9 @@ export function PuzzleControls({
           <Button variant="outline" onClick={handleReset} disabled={isCompleted}>
             <RefreshCw className="mr-2 h-4 w-4" /> Reset
           </Button>
-          {onNewPuzzle && (
-            <Button variant={isCompleted ? "default" : "outline"} onClick={onNewPuzzle}>
-              <RefreshCw className="mr-2 h-4 w-4" /> New Puzzle
+          {onNewPuzzle && isCompleted && (
+            <Button className="bg-primary hover:bg-primary/90 text-white shadow-lg animate-pulse" onClick={onNewPuzzle}>
+              <ArrowRight className="mr-2 h-4 w-4" /> Next Puzzle
             </Button>
           )}
         </div>
