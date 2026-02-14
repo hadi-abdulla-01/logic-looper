@@ -4,8 +4,18 @@ import { DailyPuzzle, NumberMatrixData, PatternMatchingData, SequenceSolverData 
 export function generateDailyPuzzle(date: string): DailyPuzzle {
     // Use date as seed for consistent daily puzzles
     const seed = date.split('-').reduce((acc, val) => acc + parseInt(val), 0);
+    return generatePuzzleFromSeed(seed);
+}
+
+export function generateRandomPuzzle(): DailyPuzzle {
+    // Generate a random seed
+    const seed = Math.floor(Math.random() * 10000);
+    return generatePuzzleFromSeed(seed);
+}
+
+function generatePuzzleFromSeed(seed: number): DailyPuzzle {
     const puzzleTypes = ['NumberMatrix', 'PatternMatching', 'SequenceSolver'] as const;
-    const puzzleType = puzzleTypes[seed % puzzleTypes.length]; // Deterministic type selection based on date
+    const puzzleType = puzzleTypes[seed % puzzleTypes.length]; // Deterministic type selection based on seed
 
     if (puzzleType === 'NumberMatrix') {
         return generateNumberMatrixPuzzle(seed);

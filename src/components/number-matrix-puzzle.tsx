@@ -8,10 +8,12 @@ import { validateNumberMatrix } from '@/lib/puzzle-validators';
 interface NumberMatrixPuzzleProps {
   puzzleData: NumberMatrixData;
   autoStart?: boolean;
+  onNewPuzzle?: () => void;
 }
 
-export function NumberMatrixPuzzle({ puzzleData, autoStart = false }: NumberMatrixPuzzleProps) {
+export function NumberMatrixPuzzle({ puzzleData, autoStart = false, onNewPuzzle }: NumberMatrixPuzzleProps) {
   const { gridSize, filledCells } = puzzleData;
+
 
   const initialGrid = useMemo(() => {
     const grid: (number | null)[][] = Array(gridSize)
@@ -111,6 +113,9 @@ export function NumberMatrixPuzzle({ puzzleData, autoStart = false }: NumberMatr
         userProgress={JSON.stringify(userGrid)}
         gridSize={gridSize}
         hasStarted={hasStarted}
+        onNewPuzzle={onNewPuzzle}
+      // No specific prop was provided in the instruction, so no new prop is added.
+      // If a prop was intended, please specify its name and value.
       />
     </div>
   );

@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateDailyPuzzle as generateStaticPuzzle } from '@/lib/static-puzzles';
+import { generateDailyPuzzle as generateStaticPuzzle, generateRandomPuzzle } from '@/lib/static-puzzles';
 import { DailyPuzzle } from '@/lib/types';
 
 export async function updateUserStats(input: {
@@ -150,6 +150,11 @@ export async function generateDailyPuzzle(input: { date: string; userProgression
   // Use static puzzle generator instead of AI
   // We ignore userProgressionLevel for now
   return generateStaticPuzzle(input.date);
+}
+
+export async function generateNewPuzzle(): Promise<DailyPuzzle> {
+  // Use static puzzle generator for random new puzzle
+  return generateRandomPuzzle();
 }
 
 export async function getContextualPuzzleHint(input: {

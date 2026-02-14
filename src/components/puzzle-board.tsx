@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { generateDailyPuzzle } from '@/lib/actions';
+import { generateDailyPuzzle, generateNewPuzzle } from '@/lib/actions';
 import type { DailyPuzzle } from '@/lib/types';
 import {
   Card,
@@ -69,23 +69,37 @@ export function PuzzleBoard() {
     fetchPuzzle();
   }, []);
 
+  const handleNewPuzzle = async () => {
+    setLoading(true);
+    try {
+      const newPuzzle = await generateNewPuzzle();
+      setPuzzle(newPuzzle);
+      setIsGameStarted(true);
+    } catch (err) {
+      setError('Failed to generate new puzzle.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderPuzzle = () => {
     if (!puzzle) return null;
 
     switch (puzzle.puzzleType) {
       case 'NumberMatrix':
         if (puzzle.puzzleData.type === 'NumberMatrix') {
-          return <NumberMatrixPuzzle puzzleData={puzzle.puzzleData} autoStart={true} />;
+          return <NumberMatrixPuzzle puzzleData={puzzle.puzzleData} autoStart={true} onNewPuzzle={handleNewPuzzle} />;
         }
         break;
       case 'PatternMatching':
         if (puzzle.puzzleData.type === 'PatternMatching') {
-          return <PatternMatchingPuzzle puzzleData={puzzle.puzzleData} autoStart={true} />;
+          return <PatternMatchingPuzzle puzzleData={puzzle.puzzleData} autoStart={true} onNewPuzzle={handleNewPuzzle} />;
         }
         break;
       case 'SequenceSolver':
         if (puzzle.puzzleData.type === 'SequenceSolver') {
-          return <SequenceSolverPuzzle puzzleData={puzzle.puzzleData} autoStart={true} />;
+          return <SequenceSolverPuzzle puzzleData={puzzle.puzzleData} autoStart={true} onNewPuzzle={handleNewPuzzle} />;
         }
         break;
       case 'DeductionGrid':

@@ -10,9 +10,10 @@ import { Input } from './ui/input';
 interface SequenceSolverPuzzleProps {
     puzzleData: SequenceSolverData;
     autoStart?: boolean;
+    onNewPuzzle?: () => void;
 }
 
-export function SequenceSolverPuzzle({ puzzleData, autoStart = false }: SequenceSolverPuzzleProps) {
+export function SequenceSolverPuzzle({ puzzleData, autoStart = false, onNewPuzzle }: SequenceSolverPuzzleProps) {
     const { sequence, nextNItems, description } = puzzleData;
     const [userAnswers, setUserAnswers] = useState<string[]>(Array(nextNItems).fill(''));
     const [hasStarted, setHasStarted] = useState(autoStart);
@@ -111,6 +112,7 @@ export function SequenceSolverPuzzle({ puzzleData, autoStart = false }: Sequence
             <PuzzleControls
                 onValidate={onValidate}
                 onReset={onReset}
+                onNewPuzzle={onNewPuzzle}
                 puzzleType={puzzleData.type}
                 puzzleDescription={description}
                 userProgress={JSON.stringify({ userAnswers })}

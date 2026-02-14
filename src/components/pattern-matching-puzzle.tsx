@@ -9,6 +9,7 @@ import { validatePatternMatching } from '@/lib/puzzle-validators';
 interface PatternMatchingPuzzleProps {
     puzzleData: PatternMatchingData;
     autoStart?: boolean;
+    onNewPuzzle?: () => void;
 }
 
 // Pattern visualization mapping
@@ -21,7 +22,7 @@ const PATTERN_VISUALS: Record<string, { emoji: string; color: string; label: str
     purple_diamond: { emoji: '🟪', color: 'bg-purple-500', label: 'Purple Diamond' },
 };
 
-export function PatternMatchingPuzzle({ puzzleData, autoStart = false }: PatternMatchingPuzzleProps) {
+export function PatternMatchingPuzzle({ puzzleData, autoStart = false, onNewPuzzle }: PatternMatchingPuzzleProps) {
     const { patternSequence, missingElementIndex, options } = puzzleData;
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [hasStarted, setHasStarted] = useState(autoStart);
@@ -131,6 +132,7 @@ export function PatternMatchingPuzzle({ puzzleData, autoStart = false }: Pattern
                 puzzleDescription={`Find the missing pattern in the sequence. Look for repeating patterns or logical progressions.`}
                 userProgress={JSON.stringify({ selectedOption })}
                 hasStarted={hasStarted}
+                onNewPuzzle={onNewPuzzle}
             />
         </div>
     );

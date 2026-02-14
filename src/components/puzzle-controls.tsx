@@ -28,6 +28,7 @@ type PuzzleControlsProps = {
   userProgress: string;
   gridSize?: number; // For difficulty calculation
   hasStarted?: boolean;
+  onNewPuzzle?: () => void;
 };
 
 export function PuzzleControls({
@@ -38,6 +39,7 @@ export function PuzzleControls({
   userProgress,
   gridSize,
   hasStarted = false,
+  onNewPuzzle
 }: PuzzleControlsProps) {
   const { toast } = useToast();
   const timer = usePuzzleTimer();
@@ -237,9 +239,16 @@ export function PuzzleControls({
 
       {/* Action Buttons */}
       <div className="flex justify-between items-center">
-        <Button variant="outline" onClick={handleReset} disabled={isCompleted}>
-          <RefreshCw className="mr-2 h-4 w-4" /> Reset
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handleReset} disabled={isCompleted}>
+            <RefreshCw className="mr-2 h-4 w-4" /> Reset
+          </Button>
+          {onNewPuzzle && (
+            <Button variant={isCompleted ? "default" : "outline"} onClick={onNewPuzzle}>
+              <RefreshCw className="mr-2 h-4 w-4" /> New Puzzle
+            </Button>
+          )}
+        </div>
 
         <div className="flex gap-2">
           <Dialog>
