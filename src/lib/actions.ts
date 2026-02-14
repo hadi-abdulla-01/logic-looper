@@ -34,6 +34,86 @@ export async function updateUserStats(input: {
   }
 }
 
+export async function savePuzzleCompletion(input: {
+  date: string;
+  puzzleType: string;
+  difficulty: string;
+  score: number;
+  timeInSeconds: number;
+  rank: string;
+  hintsUsed: number;
+  // User stats to update simultaneously
+  userStats: {
+    streak: number;
+    totalPuzzlesSolved: number;
+    totalScore: number;
+  }
+}) {
+  const session = await getServerSession(authOptions);
+
+  if (!session || !session.user || !session.user.email) {
+    return { success: false, error: "Not authenticated" };
+  }
+
+  try {
+    // 1. Upsert DailyScore
+    const existingScore = await prisma.dailyScore.findUnique({
+      where: {
+        userId_date: {
+          userId: session.user.id,
+          date: input.date,
+        }
+      }
+    });
+
+    if (!existingScore || input.score > existingScore.score) {
+      await prisma.dailyScore.upsert({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: input.date,
+          }
+        },
+        update: {
+          score: input.score,
+          timeInSeconds: input.timeInSeconds,
+          rank: input.rank,
+          hintsUsed: input.hintsUsed,
+          puzzleType: input.puzzleType,
+          difficulty: input.difficulty,
+        },
+        create: {
+          userId: session.user.id,
+          date: input.date,
+          score: input.score,
+          timeInSeconds: input.timeInSeconds,
+          rank: input.rank,
+          hintsUsed: input.hintsUsed,
+          puzzleType: input.puzzleType,
+          difficulty: input.difficulty,
+          synced: true
+        }
+      });
+    }
+
+    // 2. Update User Stats
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        streak: input.userStats.streak,
+        totalPuzzlesSolved: input.userStats.totalPuzzlesSolved,
+        totalScore: input.userStats.totalScore,
+        lastPlayedDate: new Date().toISOString(),
+      },
+    });
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to save puzzle completion:", error);
+    return { success: false, error: "Database save failed" };
+  }
+}
+
 export async function getLeaderboardData() {
   try {
     const users = await prisma.user.findMany({

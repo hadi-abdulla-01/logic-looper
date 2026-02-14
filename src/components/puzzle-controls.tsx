@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Lightbulb, RefreshCw, CheckCircle2, Award, Clock, Trophy } from 'lucide-react';
 import { format } from 'date-fns';
-import { getContextualPuzzleHint, updateUserStats } from "@/lib/actions";
+import { getContextualPuzzleHint, updateUserStats, savePuzzleCompletion } from "@/lib/actions";
 import { usePuzzleTimer } from "@/hooks/use-puzzle-timer";
 import { calculateScore, getDifficultyLevel, type PuzzleType } from "@/lib/scoring";
 import { getUserProgress, updateUserProgress, completePuzzle, getCompletedDates } from "@/lib/indexeddb";
@@ -130,11 +130,20 @@ export function PuzzleControls({
             ),
           });
 
-          // Sync to server
-          await updateUserStats({
-            streak: newStreak,
-            totalPuzzlesSolved: updatedTotalPuzzlesSolved,
-            totalScore: updatedTotalScore
+          // Sync to server (save daily score AND user stats)
+          await savePuzzleCompletion({
+            date: today,
+            puzzleType,
+            difficulty,
+            score: scoreResult.totalScore,
+            timeInSeconds: timer.time,
+            rank: scoreResult.rank,
+            hintsUsed,
+            userStats: {
+              streak: newStreak,
+              totalPuzzlesSolved: updatedTotalPuzzlesSolved,
+              totalScore: updatedTotalScore
+            }
           });
 
         } catch (statsError) {
