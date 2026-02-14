@@ -8,16 +8,28 @@ import { getAllRecords } from '@/lib/indexeddb';
 import type { DailyActivityRecord } from '@/lib/indexeddb';
 
 export function ActivityHeatmap() {
-  const [activityData, setActivityData] = useState<Map<string, DailyActivityRecord>>(new Map());
+  const [activityData, setActivityData] = useState<Map<string, { count: number; latest: DailyActivityRecord }>>(new Map());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadActivity() {
       try {
         const activities = await getAllRecords<DailyActivityRecord>('dailyActivity');
-        const activityMap = new Map<string, DailyActivityRecord>();
+        const activityMap = new Map<string, { count: number; latest: DailyActivityRecord }>();
+
         activities.forEach((activity) => {
-          activityMap.set(activity.date, activity);
+          const current = activityMap.get(activity.date);
+          if (current) {
+            activityMap.set(activity.date, {
+              count: current.count + 1,
+              latest: activity // Assuming activities are loaded in order, or we could compare timestamps
+            });
+          } else {
+            activityMap.set(activity.date, {
+              count: 1,
+              latest: activity
+            });
+          }
         });
         setActivityData(activityMap);
       } catch (error) {
@@ -35,19 +47,15 @@ export function ActivityHeatmap() {
 
   const days = eachDayOfInterval({ start: yearStart, end: yearEnd });
 
-  const getIntensity = (activity?: DailyActivityRecord): number => {
-    if (!activity || !activity.completed) return 0;
+  const getIntensity = (data?: { count: number }): number => {
+    if (!data || data.count === 0) return 0;
 
-    // Map rank to intensity (0-4)
-    const rankMap: Record<string, number> = {
-      'S': 4, // Exceptional
-      'A': 3, // Excellent
-      'B': 2, // Good
-      'C': 1, // Average
-      'D': 1, // Below average
-    };
-
-    return rankMap[activity.rank] || 1;
+    // Frequency based mapping
+    if (data.count === 1) return 1;
+    if (data.count === 2) return 2;
+    if (data.count >= 3 && data.count < 5) return 3;
+    if (data.count >= 5) return 4;
+    return 1;
   };
 
   const getIntensityColor = (intensity: number): string => {
@@ -61,20 +69,25 @@ export function ActivityHeatmap() {
     }
   };
 
-  const getTooltipText = (date: Date, activity?: DailyActivityRecord) => {
+  const getTooltipText = (date: Date, data?: { count: number; latest: DailyActivityRecord }) => {
     const formattedDate = format(date, 'MMMM d, yyyy');
 
-    if (!activity || !activity.completed) {
+    if (!data || data.count === 0) {
       return `No puzzle solved on ${formattedDate}`;
     }
+
+    const { count, latest } = data;
 
     return (
       <div className="space-y-1">
         <p className="font-semibold">{formattedDate}</p>
-        <p>Score: {activity.score}</p>
-        <p>Rank: {activity.rank}</p>
-        <p>Time: {Math.floor(activity.timeInSeconds / 60)}:{(activity.timeInSeconds % 60).toString().padStart(2, '0')}</p>
-        <p className="text-xs text-muted-foreground">{activity.puzzleType}</p>
+        <p className="font-medium text-primary">{count} {count === 1 ? 'puzzle' : 'puzzles'} solved</p>
+        <div className="pt-1 border-t border-border mt-1">
+          <p className="text-xs text-muted-foreground">Latest:</p>
+          <p>Score: {latest.score}</p>
+          <p>Rank: {latest.rank}</p>
+          <p>Time: {Math.floor(latest.timeInSeconds / 60)}:{(latest.timeInSeconds % 60).toString().padStart(2, '0')}</p>
+        </div>
       </div>
     );
   };
@@ -93,8 +106,8 @@ export function ActivityHeatmap() {
         <div className="grid grid-rows-7 grid-flow-col gap-1">
           {days.map((day, index) => {
             const dateString = format(day, 'yyyy-MM-dd');
-            const activity = activityData.get(dateString);
-            const intensity = getIntensity(activity);
+            const data = activityData.get(dateString);
+            const intensity = getIntensity(data);
             const isToday = isSameDay(day, today);
 
             return (
@@ -109,7 +122,7 @@ export function ActivityHeatmap() {
                   />
                 </TooltipTrigger>
                 <TooltipContent>
-                  {getTooltipText(day, activity)}
+                  {getTooltipText(day, data)}
                 </TooltipContent>
               </Tooltip>
             );

@@ -90,7 +90,9 @@ model DailyScore {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   
-  @@unique([userId, date])
+  createdAt   DateTime @default(now())
+  
+  // Removed unique constraint to allow multiple plays per day
   @@index([date])
   @@index([userId, date])
 }

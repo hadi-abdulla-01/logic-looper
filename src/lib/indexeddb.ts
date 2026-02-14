@@ -4,7 +4,7 @@
  */
 
 const DB_NAME = 'LogicLooperDB';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 // Store names
 export const STORES = {
@@ -29,6 +29,7 @@ export interface PuzzleRecord {
 }
 
 export interface DailyActivityRecord {
+    id?: string;
     date: string; // YYYY-MM-DD
     completed: boolean;
     score: number;
@@ -86,8 +87,16 @@ function initDB(): Promise<IDBDatabase> {
             }
 
             // Create daily activity store
+            if (db.objectStoreNames.contains(STORES.DAILY_ACTIVITY)) {
+                if (event.oldVersion < 2) {
+                    db.deleteObjectStore(STORES.DAILY_ACTIVITY);
+                }
+            }
+
             if (!db.objectStoreNames.contains(STORES.DAILY_ACTIVITY)) {
-                const activityStore = db.createObjectStore(STORES.DAILY_ACTIVITY, { keyPath: 'date' });
+                // V2: Use 'id' as keyPath to allow multiple records per day
+                const activityStore = db.createObjectStore(STORES.DAILY_ACTIVITY, { keyPath: 'id' });
+                activityStore.createIndex('date', 'date', { unique: false });
                 activityStore.createIndex('completed', 'completed', { unique: false });
                 activityStore.createIndex('synced', 'synced', { unique: false });
             }
@@ -329,7 +338,9 @@ export async function completePuzzle(
     }
 
     // Update daily activity
+    // Update daily activity
     const activity: DailyActivityRecord = {
+        id: `${date}-${Date.now()}`,
         date,
         completed: true,
         score,

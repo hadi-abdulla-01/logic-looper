@@ -56,45 +56,49 @@ export async function savePuzzleCompletion(input: {
   }
 
   try {
-    // 1. Upsert DailyScore
-    const existingScore = await prisma.dailyScore.findUnique({
-      where: {
-        userId_date: {
-          userId: session.user.id,
-          date: input.date,
-        }
+    // 1. Create new DailyScore record (History)
+    await prisma.dailyScore.create({
+      data: {
+        userId: session.user.id,
+        date: input.date,
+        score: input.score,
+        timeInSeconds: input.timeInSeconds,
+        rank: input.rank,
+        hintsUsed: input.hintsUsed,
+        puzzleType: input.puzzleType,
+        difficulty: input.difficulty,
+        synced: true
       }
     });
 
-    if (!existingScore || input.score > existingScore.score) {
-      await prisma.dailyScore.upsert({
-        where: {
-          userId_date: {
-            userId: session.user.id,
-            date: input.date,
-          }
-        },
-        update: {
-          score: input.score,
-          timeInSeconds: input.timeInSeconds,
-          rank: input.rank,
-          hintsUsed: input.hintsUsed,
-          puzzleType: input.puzzleType,
-          difficulty: input.difficulty,
-        },
-        create: {
-          userId: session.user.id,
+    // 2. Update Leaderboard Table (Daily Aggregate)
+    // We fetch current user info first to get name/image
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true, image: true }
+    });
+
+    // Upsert Leaderboard entry for today
+    await prisma.leaderboard.upsert({
+      where: {
+        date_userId: {
           date: input.date,
-          score: input.score,
-          timeInSeconds: input.timeInSeconds,
-          rank: input.rank,
-          hintsUsed: input.hintsUsed,
-          puzzleType: input.puzzleType,
-          difficulty: input.difficulty,
-          synced: true
+          userId: session.user.id
         }
-      });
-    }
+      },
+      update: {
+        score: { increment: input.score }, // Accumulate score
+        rank: 0 // Rank will be recalculated dynamically or handle separately
+      },
+      create: {
+        date: input.date,
+        userId: session.user.id,
+        userName: user?.name || 'Player',
+        userImage: user?.image,
+        score: input.score,
+        rank: 0
+      }
+    });
 
     // 2. Update User Stats
     await prisma.user.update({
