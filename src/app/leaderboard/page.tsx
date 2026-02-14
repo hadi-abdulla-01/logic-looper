@@ -19,6 +19,8 @@ import { Trophy, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getLeaderboardData } from '@/lib/actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LeaderboardPage() {
   const leaderboard = await getLeaderboardData();
 
@@ -46,7 +48,7 @@ export default async function LeaderboardPage() {
             {leaderboard.length === 0 ? (
               <TableRow><TableCell colSpan={4} className="text-center py-8 text-muted-foreground">No players yet. Be the first!</TableCell></TableRow>
             ) : (
-              leaderboard.map((player) => (
+              leaderboard.map((player: { id: string; rank: number; name: string; image: string | null; totalScore: number; streak: number }) => (
                 <TableRow key={player.id}>
                   <TableCell className="font-medium text-lg">
                     <div className="flex items-center justify-center">
