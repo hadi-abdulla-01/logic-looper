@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
@@ -6,10 +6,24 @@ import { SidebarNav } from '@/components/sidebar-nav';
 import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { SessionProvider } from '@/components/session-provider';
+import { ServiceWorkerRegistrar } from '@/components/service-worker-registrar';
 
 export const metadata: Metadata = {
-  title: 'Logic Loop',
-  description: 'Engaging daily puzzle game.',
+  title: 'Logic Looper — Daily Puzzle Game',
+  description: 'Play and solve daily logic puzzles. Track your streak, earn achievements, and compete on the leaderboard. Works offline.',
+  manifest: '/manifest.json',
+  icons: { icon: '/favicon.ico' },
+  openGraph: {
+    title: 'Logic Looper',
+    description: 'Daily logic puzzles with streaks, heatmaps, and achievements.',
+    type: 'website',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#414BEA',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -27,7 +41,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
@@ -44,6 +58,7 @@ export default function RootLayout({
           </SidebarProvider>
           <Toaster />
         </SessionProvider>
+        <ServiceWorkerRegistrar />
       </body>
     </html>
   );
