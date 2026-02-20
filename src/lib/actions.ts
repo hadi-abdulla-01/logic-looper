@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateDailyPuzzle as generateStaticPuzzle, generateRandomPuzzle } from '@/lib/static-puzzles';
+import { generateDailyPuzzle as generateStaticPuzzle } from '@/lib/static-puzzles';
 import { DailyPuzzle } from '@/lib/types';
 
 export async function updateUserStats(input: {
@@ -146,16 +146,20 @@ export async function getLeaderboardData() {
   }
 }
 
-export async function generateDailyPuzzle(input: { date: string; userProgressionLevel?: number }): Promise<DailyPuzzle> {
-  // Use static puzzle generator instead of AI
-  // We ignore userProgressionLevel for now
-  return generateStaticPuzzle(input.date);
+export async function generateDailyPuzzle(input: {
+  date: string;
+  userProgressionLevel?: number;
+  playerId: string; // userId for logged-in users, guestId UUID for guests
+}): Promise<DailyPuzzle> {
+  // Each player gets a unique puzzle for the day based on date + their ID.
+  // Same player + same day = same puzzle (idempotent).
+  // Different player = different puzzle → prevents guest→login replay cheating.
+  const session = await getServerSession(authOptions);
+  const resolvedPlayerId = session?.user?.id ?? input.playerId;
+  return generateStaticPuzzle(input.date, resolvedPlayerId);
 }
 
-export async function generateNewPuzzle(): Promise<DailyPuzzle> {
-  // Use static puzzle generator for random new puzzle
-  return generateRandomPuzzle();
-}
+
 
 export async function getContextualPuzzleHint(input: {
   puzzleType: string;

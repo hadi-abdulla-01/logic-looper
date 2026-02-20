@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Lightbulb, RefreshCw, CheckCircle2, Trophy, Clock, ArrowRight, Loader2, CheckCheck } from 'lucide-react';
+import { Lightbulb, RefreshCw, CheckCircle2, Trophy, Clock, Loader2, CheckCheck } from 'lucide-react';
 import { format } from 'date-fns';
 import { getContextualPuzzleHint, savePuzzleCompletion } from "@/lib/actions";
 import { usePuzzleTimer } from "@/hooks/use-puzzle-timer";
@@ -30,7 +30,7 @@ type PuzzleControlsProps = {
   userProgress: string;
   gridSize?: number;
   hasStarted?: boolean;
-  onNewPuzzle?: () => void;
+
 };
 
 type SyncStatus = 'idle' | 'syncing' | 'synced' | 'offline';
@@ -43,7 +43,7 @@ export function PuzzleControls({
   userProgress,
   gridSize,
   hasStarted = false,
-  onNewPuzzle
+
 }: PuzzleControlsProps) {
   const { toast } = useToast();
   const timer = usePuzzleTimer();
@@ -358,15 +358,7 @@ export function PuzzleControls({
             <RefreshCw className="h-4 w-4" />
             <span className="hidden sm:inline">Reset</span>
           </Button>
-          {onNewPuzzle && isCompleted && (
-            <Button
-              className="bg-primary hover:bg-primary/90 text-white shadow-lg gap-2 transition-all"
-              onClick={onNewPuzzle}
-            >
-              <ArrowRight className="h-4 w-4" />
-              Next Puzzle
-            </Button>
-          )}
+
         </div>
 
         <div className="flex gap-2">

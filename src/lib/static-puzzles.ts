@@ -1,11 +1,28 @@
 import { DailyPuzzle, NumberMatrixData, PatternMatchingData, SequenceSolverData } from '@/lib/types';
 
-// Static puzzle generator - no AI needed
-export function generateDailyPuzzle(date: string): DailyPuzzle {
-    // Use date as seed for consistent daily puzzles
-    const seed = date.split('-').reduce((acc, val) => acc + parseInt(val), 0);
+// Deterministic hash of any string → number
+function hashString(str: string): number {
+    let hash = 2166136261; // FNV-1a 32-bit offset basis
+    for (let i = 0; i < str.length; i++) {
+        hash ^= str.charCodeAt(i);
+        hash = (hash * 16777619) >>> 0; // FNV prime, keep 32-bit unsigned
+    }
+    return hash;
+}
+
+/**
+ * Generate today's puzzle for a specific player.
+ * seed = date + playerId  →  each player gets a UNIQUE puzzle.
+ * The same player always gets the same puzzle on the same day (idempotent).
+ *
+ * @param date      "yyyy-MM-dd"
+ * @param playerId  userId for logged-in users; guestId UUID for guests
+ */
+export function generateDailyPuzzle(date: string, playerId: string): DailyPuzzle {
+    const seed = hashString(`${date}::${playerId}`);
     return generatePuzzleFromSeed(seed);
 }
+
 
 export function generateRandomPuzzle(): DailyPuzzle {
     // Generate a random seed

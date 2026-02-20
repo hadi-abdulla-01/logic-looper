@@ -10,11 +10,11 @@ import { getTodayDate } from '@/lib/date-utils';
 interface NumberMatrixPuzzleProps {
   puzzleData: NumberMatrixData;
   autoStart?: boolean;
-  onNewPuzzle?: () => void;
+
   puzzleDate?: string;
 }
 
-export function NumberMatrixPuzzle({ puzzleData, autoStart = false, onNewPuzzle, puzzleDate }: NumberMatrixPuzzleProps) {
+export function NumberMatrixPuzzle({ puzzleData, autoStart = false, puzzleDate }: NumberMatrixPuzzleProps) {
   const { gridSize, filledCells } = puzzleData;
   const date = puzzleDate || getTodayDate();
 
@@ -218,7 +218,7 @@ export function NumberMatrixPuzzle({ puzzleData, autoStart = false, onNewPuzzle,
         userProgress={JSON.stringify(userGrid)}
         gridSize={gridSize}
         hasStarted={hasStarted}
-        onNewPuzzle={onNewPuzzle}
+
       />
     </div>
   );
