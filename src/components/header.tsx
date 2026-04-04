@@ -1,6 +1,6 @@
 'use client';
 
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
@@ -12,9 +12,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { User, LogIn, LogOut, Trophy, Award, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { User, LogIn, LogOut, Trophy, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getCompletedDates } from '@/lib/indexeddb';
 import { calculateStreak } from '@/lib/date-utils';
@@ -105,9 +106,11 @@ export function Header() {
 
         {/* Auth Button */}
         {!session && !isLoading ? (
-          <Button onClick={() => signIn('google')} variant="default" size="sm">
-            <LogIn className="mr-2 h-4 w-4" />
-            Sign In
+          <Button asChild variant="default" size="sm">
+            <Link href="/login">
+              <LogIn className="mr-2 h-4 w-4" />
+              Sign In
+            </Link>
           </Button>
         ) : (
           <DropdownMenu>
@@ -156,9 +159,11 @@ export function Header() {
                     <span>Streak: <strong>{localStreak}</strong> days</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signIn('google')}>
+                  <DropdownMenuItem asChild>
+                    <Link href="/login">
                     <LogIn className="mr-2 h-4 w-4" />
-                    <span>Sign in to sync progress</span>
+                      <span>Sign in to sync progress</span>
+                    </Link>
                   </DropdownMenuItem>
                 </>
               )}
