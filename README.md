@@ -12,17 +12,11 @@ Logic Looper is an offline-capable daily puzzle game built with Next.js. Players
 
 ## Login flow
 
-A dedicated login page is available at:
-
-- `/login`
-
 How it works:
 
-1. Header **Sign In** goes to `/login`.
-2. `/login` provides:
-   - **Continue with Google** (cloud sync enabled)
-   - **Continue as Guest** (local-only, can sign in later)
-3. NextAuth is configured to use `/login` for sign-in and error pages.
+1. Users can start playing immediately in guest mode on `/`.
+2. Header and sidebar provide **Sign In with Google** for cloud sync.
+3. Optional `/login` route is available, but authentication is not blocked behind it.
 
 ## Data storage model
 

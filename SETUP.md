@@ -48,6 +48,8 @@ Open `http://localhost:9002`.
 
 ## 5) Validate critical paths
 
+1. Open `/`.
+2. Click **Sign In with Google** from header or sidebar.
 1. Visit `/login`.
 2. Sign in with Google.
 3. Solve one puzzle.

@@ -106,6 +106,9 @@ export function Header() {
 
         {/* Auth Button */}
         {!session && !isLoading ? (
+          <Button onClick={() => signIn('google', { callbackUrl: '/' })} variant="default" size="sm">
+            <LogIn className="mr-2 h-4 w-4" />
+            Sign In with Google
           <Button asChild variant="default" size="sm">
             <Link href="/login">
               <LogIn className="mr-2 h-4 w-4" />
@@ -159,6 +162,7 @@ export function Header() {
                     <span>Streak: <strong>{localStreak}</strong> days</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => signIn('google', { callbackUrl: '/' })}>
                   <DropdownMenuItem asChild>
                     <Link href="/login">
                     <LogIn className="mr-2 h-4 w-4" />

@@ -4,6 +4,9 @@
 
 ## Current status
 
+- ✅ Header sign-in now supports direct Google authentication.
+- ✅ Sidebar profile section includes sign-in CTA for guest users.
+- ✅ Optional `/login` route remains available for explicit auth entry.
 - ✅ Dedicated login route implemented at `/login`.
 - ✅ Header sign-in now routes to `/login`.
 - ✅ NextAuth sign-in and error pages configured to `/login`.
