@@ -1,57 +1,24 @@
-# Logic Looper - Final Status
+# Logic Looper Status
 
-**Date**: February 14, 2026  
-**Status**: ✅ **FULLY FUNCTIONAL** (AI Removed, Static Puzzles Active, Robust Auth)
+**Last updated:** April 4, 2026
 
----
+## Current status
 
-## 🚀 **Latest Updates**
+- ✅ Header sign-in now supports direct Google authentication.
+- ✅ Sidebar profile section includes sign-in CTA for guest users.
+- ✅ Optional `/login` route remains available for explicit auth entry.
+- ✅ Documentation refreshed to reflect current auth + storage behavior.
 
-### 1. **Removed Gemini AI Dependency** ✅
-- Switched from dynamic AI generation to robust **Static Puzzle Generators**.
-- Puzzles: `NumberMatrix`, `PatternMatching`, `SequenceSolver` are now generated algorithmically locally.
-- **Benefit**: Faster loading, no API keys required, consistent difficulty.
+## Data storage status
 
-### 2. **Fixed Authentication & Database** ✅
-- **Auth Strategy**: Removed `PrismaAdapter` dependency in favor of **Manual Sync**.
-- **Resilience**: Login now succeeds even if database writes fail temporarily (fallback to local session).
-- **Persistence**: User stats sync to database when connection is available.
-- **Note**: Requires `npm run dev` restart.
+- ✅ Local persistence: IndexedDB for guest/offline usage.
+- ✅ Cloud persistence: Prisma/PostgreSQL for authenticated score and stat sync.
+- ✅ Sync endpoint in place: `/api/sync/daily-scores`.
 
-### 3. **Fixed Validators & Timer** ✅
-- **Timer**: Now starts *only* when you begin interacting with the puzzle (not on page load).
-- **PatternMatching**: Validator updated to correctly handle the missing element placeholder ('?').
-- **NumberMatrix**: Validator confirmed working for Sudoku logic.
+## Required external configuration
 
----
+- Google OAuth client ID/secret.
+- PostgreSQL connection string.
+- NextAuth secret.
 
-## 🎮 **How to Play**
-
-1. **Restart Server**:
-   ```bash
-   # Stop server (Ctrl+C)
-   npm run dev
-   ```
-
-2. **Open App**: http://localhost:9002
-
-3. **Login**:
-   - If previously stuck, clear cookies or open Incognito.
-   - Click "Sign In with Google".
-
-4. **Play**:
-   - Puzzles load instantly.
-   - Timer starts when you make your first move.
-   - Scores save to database (or locally if offline).
-
----
-
-## 🛠️ **Troubleshooting**
-
-- **"Login error"**: Check console logs. If DB fails, you still get logged in (stateless mode).
-- **"Timer starts early"**: Fixed.
-- **"Purple/Missing Emojis"**: Fixed visual rendering for patterns.
-
----
-
-**Enjoy the game!** 🧩
+Without these, guest play still works locally.
