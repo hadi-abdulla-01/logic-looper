@@ -50,6 +50,8 @@ Open `http://localhost:9002`.
 
 1. Open `/`.
 2. Click **Sign In with Google** from header or sidebar.
+1. Visit `/login`.
+2. Sign in with Google.
 3. Solve one puzzle.
 4. Confirm `POST /api/sync/daily-scores` succeeds in network panel.
 5. Confirm leaderboard page shows updated score.
