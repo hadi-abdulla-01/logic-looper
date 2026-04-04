@@ -22,13 +22,12 @@ export async function POST(req: NextRequest) {
         }
 
         // Check if score already exists for this date
-        const existing = await prisma.dailyScore.findUnique({
+        const existing = await prisma.dailyScore.findFirst({
             where: {
-                userId_date: {
-                    userId: session.user.id,
-                    date,
-                },
+                userId: session.user.id,
+                date,
             },
+            orderBy: { score: "desc" },
         });
 
         let dailyScore;

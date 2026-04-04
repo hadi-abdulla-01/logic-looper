@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { User, LogIn, LogOut, Trophy, Award, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { User, LogIn, LogOut, Trophy, Wifi, WifiOff, RefreshCw } from 'lucide-react';
 import { useOnlineStatus } from '@/hooks/use-online-status';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
@@ -105,9 +105,9 @@ export function Header() {
 
         {/* Auth Button */}
         {!session && !isLoading ? (
-          <Button onClick={() => signIn('google')} variant="default" size="sm">
+          <Button onClick={() => signIn('google', { callbackUrl: '/' })} variant="default" size="sm">
             <LogIn className="mr-2 h-4 w-4" />
-            Sign In
+            Sign In with Google
           </Button>
         ) : (
           <DropdownMenu>
@@ -156,7 +156,7 @@ export function Header() {
                     <span>Streak: <strong>{localStreak}</strong> days</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signIn('google')}>
+                  <DropdownMenuItem onClick={() => signIn('google', { callbackUrl: '/' })}>
                     <LogIn className="mr-2 h-4 w-4" />
                     <span>Sign in to sync progress</span>
                   </DropdownMenuItem>

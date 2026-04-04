@@ -12,9 +12,10 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LayoutGrid, Trophy, Award, User } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 
 export function SidebarNav() {
   const pathname = usePathname();
@@ -61,6 +62,16 @@ export function SidebarNav() {
             <span className="text-xs text-muted-foreground truncate">{session?.user?.email || 'Sign in to save progress'}</span>
           </div>
         </div>
+        {!session?.user && (
+          <Button
+            className="mt-2 w-full group-data-[collapsible=icon]:hidden"
+            size="sm"
+            onClick={() => signIn('google', { callbackUrl: '/' })}
+          >
+            Sign In with Google
+          </Button>
+        )}
+
       </SidebarFooter>
     </Sidebar>
   );
